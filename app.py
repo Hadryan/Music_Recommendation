@@ -318,7 +318,6 @@ def rf():
         genre = get_genre(int(result[0])) 
         print("G=",genre)
         return render_template('output.html', genre = '{}'.format(genre))
-
     else:
         return "Could not open the song"
     #give output
@@ -326,124 +325,317 @@ def rf():
 @app.route('/rf_pca', methods=['POST','GET'])
 def rf_pca():
     audio_songs = load_song()
-    feature__list_all = feature_extraction(audio_songs)
-    feature__list_all = pca_extraction(feature__list_all)
-    loaded_model = load_model("rf_pca.pkl")
-    feature__list_all.reshape(-1,1)
-    pred_probs = loaded_model.predict_proba(feature__list_all)
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("rf_pca.pkl")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all = pca_extraction(feature__list_all[:,1:])
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all)
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
     #give output
 
 @app.route('/rf_rfe', methods=['POST','GET'])
 def rf_rfe():
     audio_songs = load_song()
-    feature__list_all = feature_extraction(audio_songs)
-    loaded_model = load_model("rf_pca.pkl")
-    pred_probs = loaded_model.predict_proba(feature__list_all)
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("rf_rfe.pkl")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all[:,1:])
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
     #give output
 
 @app.route('/rf_pca_rfe', methods=['POST','GET'])
 def rf_pca_rfe():
-    #somehow get which button is clicked
-    #and call feature extraction accordingly
-    #then the saved model to be loaded
-    #and compute the genre
-    pass
+    audio_songs = load_song()
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("rf_pca_rfe.pkl")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all = pca_extraction(feature__list_all[:,1:])
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all)
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
+    #give output
 
 @app.route('/xgb', methods=['POST','GET'])
 def xgb():
     audio_songs = load_song()
-    feature__list_all = feature_extraction(audio_songs)
-    loaded_model = load_model("xgb.pkl")
-    pred_probs = loaded_model.predict_proba(feature__list_all)
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("xgb.pkl")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all[:,1:])
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
+    #give output
 
 @app.route('/xgb_pca', methods=['POST','GET'])
 def xgb_pca():
     audio_songs = load_song()
-    feature__list_all = feature_extraction(audio_songs)
-    feature__list_all = pca_extraction(feature__list_all)
-    loaded_model = load_model("xgb_pca.pkl")
-    pred_probs = loaded_model.predict_proba(feature__list_all)
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("xgb_pca.pkl")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all = pca_extraction(feature__list_all)
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all)
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
     #give output
 
 @app.route('/xgb_rfe', methods=['POST','GET'])
 def xgb_rfe():
-    #somehow get which button is clicked
-    #and call feature extraction accordingly
-    #then the saved model to be loaded
-    #and compute the genre
-    pass
+    audio_songs = load_song()
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("xgb_rfe.pkl")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all[:,1:])
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
+    #give output
 
 @app.route('/xgb_pca_rfe', methods=['POST','GET'])
 def xgb_pca_rfe():
-    #somehow get which button is clicked
-    #and call feature extraction accordingly
-    #then the saved model to be loaded
-    #and compute the genre
-    pass
+    audio_songs = load_song()
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("xgb_pca_rfe.pkl")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all = pca_extraction(feature__list_all)
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all[:,1:])
+        print (pred_probs)
+    else:
+        return "Could not open the song"
+    #give output
 
 @app.route('/svm', methods=['POST','GET'])
 def svm():
     audio_songs = load_song()
-    feature__list_all = feature_extraction(audio_songs)
-    loaded_model = load_model("svm.pkl")
-    pred_probs = loaded_model.predict_proba(feature__list_all)
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("svm.pkl")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all[:,1:])
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
+    #give output
 
 @app.route('/svm_pca', methods=['POST','GET'])
 def svm_pca():
     audio_songs = load_song()
-    feature__list_all = feature_extraction(audio_songs)
-    feature__list_all = pca_extraction(feature__list_all)
-    loaded_model = load_model("svm_pca.pkl")
-    pred_probs = loaded_model.predict_proba(feature__list_all)
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("svm_pca.pkl")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all = pca_extraction(feature__list_all[:,1:])
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all)
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
     #give output
 
 @app.route('/nn', methods=['POST','GET'])
 def nn():
     audio_songs = load_song()
-    feature__list_all = feature_extraction(audio_songs)
-    loaded_model = load_model("nn.pkl")
-    pred_probs = loaded_model.predict_proba(feature__list_all)
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("nn.pickle")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all[:,1:])
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
+    #give output
 
 @app.route('/nn_pca', methods=['POST','GET'])
 def nn_pca():
     audio_songs = load_song()
-    feature__list_all = feature_extraction(audio_songs)
-    feature__list_all = pca_extraction(feature__list_all)
-    loaded_model = load_model("nn_pca.pkl")
-    pred_probs = loaded_model.predict_proba(feature__list_all)
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("nn_pca.pickle")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all = pca_extraction(feature__list_all)
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all[:,1:])
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
     #give output
 
 @app.route('/cnn', methods=['POST','GET'])
 def cnn():
     audio_songs = load_song()
-    feature__list_all = feature_extraction(audio_songs)
-    loaded_model = load_model("cnn.pkl")
-    pred_probs = loaded_model.predict_proba(feature__list_all)
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("cnn.pkl")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all[:,1:])
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
+    #give output
 
 @app.route('/cnn_pca', methods=['POST','GET'])
 def cnn_pca():
     audio_songs = load_song()
-    feature__list_all = feature_extraction(audio_songs)
-    feature__list_all = pca_extraction(feature__list_all)
-    loaded_model = load_model("cnn_pca.pkl")
-    pred_probs = loaded_model.predict_proba(feature__list_all)
-    #give output
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("cnn_pca.pkl")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all = pca_extraction(feature__list_all)
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all[:,1:])
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
 
 @app.route('/en', methods=['POST','GET'])
 def en():
     audio_songs = load_song()
-    feature__list_all = feature_extraction(audio_songs)
-    loaded_model = load_model("en.pkl")
-    pred_probs = loaded_model.predict_proba(feature__list_all)
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("cnn.pkl")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all[:,1:])
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
+    #give output
 
 @app.route('/en_pca', methods=['POST','GET'])
 def en_pca():
     audio_songs = load_song()
-    feature__list_all = feature_extraction(audio_songs)
-    feature__list_all = pca_extraction(feature__list_all)
-    loaded_model = load_model("en_pca.pkl")
-    pred_probs = loaded_model.predict_proba(feature__list_all)
-    #give output
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("en_pca.pkl")
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all = pca_extraction(feature__list_all)
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all[:,1:])
+        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+    else:
+        return "Could not open the song"
 
 @app.route('/upload', methods=['POST','GET'])
 def upload():
