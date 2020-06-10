@@ -5,8 +5,11 @@ import pandas as pd
 from bisect import bisect_left, bisect_right
 import sklearn
 import os
+import scipy
 import math
 import librosa
+from pydub import AudioSegment
+from scipy.io import wavfile
 from sklearn.decomposition import PCA
 from sklearn.feature_selection import RFE
 import xgboost as xgb
@@ -149,12 +152,12 @@ def spectral_flux(music_wave_data):
 
     return sf
 
-def feature_extraction(music_data):
+def feature_extraction(audio_data):
     feature_list_all = []
     for i in range(0, len(audio_data)):
         feature_list = [audio_data[i][2]]
         y = audio_data[i][0]
-        
+        sr = audio_data[i][1]
         feature_list.append(np.mean(abs(y)))
         feature_list.append(np.std(y))
         feature_list.append(scipy.stats.skew(abs(y)))
@@ -166,7 +169,7 @@ def feature_extraction(music_data):
         feature_list.append(np.std(zcr))    
         
         # RMSE
-        rmse = librosa.feature.rmse(y + 0.0001)[0]
+        rmse = librosa.feature.rms(y + 0.0001)[0]
         feature_list.append(np.mean(rmse))
         feature_list.append(np.std(rmse))
 
@@ -238,16 +241,32 @@ def save_song(song):
 def load_song():
     audio_data = []
     path = "songs"
+    count = 0
+    audio_data = []
     for r, d, f in os.walk(path):
         for file in f:
             if file.endswith('.mp3'):
                 filepath = str(r)+ '/' + str(file)
-                print(filepath)
-                try:
-                    y, sr = librosa.load(filepath, sr = 22050)
-                    audio_data.append([y, sr, filepath])
-                except:
-                    continue
+                count += 1
+                file_name = str(r)+ '/' + str(count) + ".wav"
+                print(file_name)
+                sound = AudioSegment.from_mp3(filepath)
+                sound.export(file_name, format="wav")
+                fs, data = wavfile.read(file_name)
+                print (data)
+                if (data.shape[1] == 2):
+                    data = data[:,0]
+                audio_data.append([data, fs, filepath])
+    # for r, d, f in os.walk(path):
+    #     for file in f:
+    #         if file.endswith('.mp3'):
+    #             filepath = str(r)+ '/' + str(file)
+    #             print(filepath)
+    #             try:
+    #                 y, sr = librosa.load(filepath, sr = 22050)
+    #                 audio_data.append([y, sr, filepath])
+    #             except:
+    #                 continue
     return audio_data
 
 @app.route('/')
