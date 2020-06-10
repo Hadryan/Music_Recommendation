@@ -272,6 +272,20 @@ def load_song():
     #             #     continue
     return audio_data
 
+def get_genre(k):
+    thisdict =  {
+      0: "International",
+      1: "Instrumental",
+      2: "Pop",
+      3: "Folk",
+      4: "Hip-Hop",
+      5: "Experimental",
+      6: "Rock",
+      7: "Electronic"
+    }
+    x = thisdict.get(k)
+    return x
+
 @app.route('/')
 def home():
     return render_template("home.html")
@@ -298,7 +312,13 @@ def rf():
         feature__list_all.reshape(-1,1)
         print(feature__list_all)
         pred_probs = loaded_model.predict_proba(feature__list_all[:,1:])
-        print (pred_probs)
+        pred_probs = np.array(pred_probs[0])
+        result = np.where(pred_probs == np.amax(pred_probs))
+        print(int(result[0]))
+        genre = get_genre(int(result[0])) 
+        print("G=",genre)
+        return render_template('output.html', genre = '{}'.format(genre))
+
     else:
         return "Could not open the song"
     #give output
