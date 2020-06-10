@@ -98,13 +98,8 @@ def get_recommendation(usr_pref_array, all_feature_array):
         recommended_songs.append(str(i+1) + ") Song Name: " + str(new_recommendation_with_score[i][0]) + "_____________" +new_recommendation[i][4])
     return recommended_songs
 
-@app.route('/')
-def hello_world():
-    return render_template("index.html")
-
-
-@app.route('/predict',methods=['POST','GET'])
-def predict():
+@app.route('/get_recommendation/predict',methods=['POST','GET'])
+def predict_recommendation():
     df = pd.read_csv('k_mean_feat.csv')
     all_feature_array = df.to_numpy()
     print(all_feature_array)
@@ -134,6 +129,40 @@ def predict():
     #     return render_template('forest_fire.html',pred='Your Forest is in Danger.\nProbability of fire occuring is {}'.format(output),bhai="kuch karna hain iska ab?")
     # else:
     #     return render_template('forest_fire.html',pred='Your Forest is safe.\n Probability of fire occuring is {}'.format(output),bhai="Your Forest is Safe for now")
+
+def store_song(song):
+    #save the file locally
+    pass
+
+@app.route('/')
+def home():
+    return render_template("home.html")
+
+@app.route('/get_recommendation', methods=['POST','GET'])
+def get_recommendation():
+    return render_template("get_recommendation.html")
+
+@app.route('/genre_prediction', methods=['POST','GET'])
+def genre_prediction():
+    if request.method == 'POST':
+      f = request.files['file']
+      print(f)
+      store_genre(f)
+    return render_template("genre_prediction.html")
+
+@app.route('/result', methods=['POST','GET'])
+def output():
+    #somehow get which button is clicked
+    #and call feature extraction accordingly
+    #then the saved model to be loaded
+    #and compute the genre
+    pass
+
+
+@app.route('/upload', methods=['POST','GET'])
+def upload():
+   return render_template('upload.html')
+
 
 
 if __name__ == '__main__':

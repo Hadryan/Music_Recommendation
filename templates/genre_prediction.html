@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>MUSIC PAGE</title> 
+		Welcome to the Music Recommendation Page! <br>
+	</head>
+	<body>
+		<form action="/output" method="post">
+			<button type="submit">Model: Random Forest 		Feature Selection: None</button>
+			<button type="submit">Model: Random Forest 		Feature Selection: None</button>
+			<button type="submit">Model: Random Forest 		Feature Selection: None</button>
+		</form>
+		<!-- Either the above part or the below part -->
+		<form action="/rf" method="post">
+			<button type="submit">Model: Random Forest 		Feature Selection: None</button>
+		</form>
+		<form action="/rf_pca" method="post">
+			<button type="submit">Model: Random Forest 		Feature Selection: PCA</button>
+		</form>
+		<form action="/rf_rfe" method="post">
+			<button type="submit">Model: Random Forest 		Feature Selection: RFE</button>
+		</form>
+		<form action="/rf_pca_rfe" method="post">
+			<button type="submit">Model: Random Forest 		Feature Selection: PCA -> RFE</button>
+		</form>
+		<form action="/svm" method="post">
+			<button type="submit">Model: SVM 				Feature Selection: None</button>
+		</form>
+		<form action="/svm_pca" method="post">
+			<button type="submit">Model: SVM 				Feature Selection: PCA</button>
+		</form>
+		<form action="/xgb" method="post">
+			<button type="submit">Model: XGB Classifier		Feature Selection: None</button>
+		</form>
+		<form action="/xgb_pca" method="post">
+			<button type="submit">Model: XGB Classifier		Feature Selection: PCA</button>
+		</form>
+		<form action="/xgb_rfe" method="post">
+			<button type="submit">Model: XGB Classifier		Feature Selection: RFE</button>
+		</form>
+		<form action="/xgb_pca_rfe" method="post">
+			<button type="submit">Model: XGB Classifier 	Feature Selection: PCA -> RFE</button>
+		</form>
+		<form action="/nn" method="post">
+			<button type="submit">Model: Neural Network 	Feature Selection: None</button>
+		</form>
+		<form action="/nn_pca" method="post">
+			<button type="submit">Model: Neural Network 	Feature Selection: PCA</button>
+		</form>
+		<form action="/cnn" method="post">
+			<button type="submit">Model: CNN - VGG			Feature Selection: None</button>
+		</form>
+		<form action="/cnn_pca" method="post">
+			<button type="submit">Model: CNN - VGG		 	Feature Selection: PCA</button>
+		</form>
+		<form action="/en" method="post">
+			<button type="submit">Model: Ensemble			Feature Selection: None</button>
+		</form>
+		<form action="/en_pca" method="post">
+			<button type="submit">Model: Ensemble		 	Feature Selection: PCA</button>
+		</form>
+		<p>
+			Designed by FAAC
+		</p>	
+	</body>
+</html>

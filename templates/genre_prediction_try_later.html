@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>MUSIC PAGE</title> 
+		Welcome to the Music Recommendation Page! <br>
+		<script language="javascript" type="text/javascript">
+		function dynamicdropdown(listindex)
+		{
+			switch (listindex)
+			{
+			case "manual" :
+				document.getElementById("select").options[0]=new Option("Select status","");
+				document.getElementById("select").options[1]=new Option("OPEN","open");
+				document.getElementById("select").options[2]=new Option("DELIVERED","delivered");
+				break;
+			case "online" :
+				document.getElementById("select").options[0]=new Option("Select status","");
+				document.getElementById("select").options[1]=new Option("OPEN","open");
+				document.getElementById("select").options[2]=new Option("DELIVERED","delivered");
+				document.getElementById("select").options[3]=new Option("SHIPPED","shipped");
+				break;
+			}
+			return true;
+		}
+		</script>
+	</head>
+	<body>
+		<form>
+			<label> Choose Model </label>
+			<select name="model" id="model">
+				<option>Random Forest</option>
+				<option>Support Vector Machine</option>
+				<option>XGB Classifier</option>
+				<option>Neural Network</option>
+				<option>Convolutional Neural Network</option>
+				<option>Ensemble Classifier</option>
+			</select>
+		</form>
+		<form>
+			<label> Choose Feature selection </label>
+			<select name="select" id="select">
+				<option>Random Forest</option>
+				<option>Support Vector Machine</option>
+				<option>XGB Classifier</option>
+				<option>Neural Network</option>
+				<option>Convolutional Neural Network</option>
+				<option>Ensemble Classifier</option>
+			</select>
+		</form>
+		<p>
+			Designed by FAAC
+		</p>	
+	</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/ruceda/catkin_ws/devel/include/**",
+        "/opt/ros/kinetic/include/**",
+        "/home/ruceda/catkin_ws/src/robosub/auv_acoustics/include/**",
+        "/home/ruceda/catkin_ws/src/robosub/auv_controller/include/**",
+        "/home/ruceda/catkin_ws/src/robosub/auv_drivers/include/**",
+        "/home/ruceda/catkin_ws/src/robosub/auv_lib/include/**",
+        "/home/ruceda/catkin_ws/src/robosub/auv_localization/include/**",
+        "/home/ruceda/catkin_ws/src/robosub/auv_localization_new/include/**",
+        "/home/ruceda/catkin_ws/src/robosub/auv_msgs/include/**",
+        "/home/ruceda/catkin_ws/src/robosub/auv_simulator/include/**",
+        "/home/ruceda/catkin_ws/src/robosub/auv_tuning_interface/include/**",
+        "/home/ruceda/catkin_ws/src/robosub/auv_utils/include/**",
+        "/home/ruceda/catkin_ws/src/robosub/auv_vision/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ]
+}
