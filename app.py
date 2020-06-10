@@ -18,6 +18,7 @@ from sklearn.svm import SVC
 from werkzeug.utils import secure_filename
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
+from matplotlib import pyplot as plt
 
 app = Flask(__name__)
 
@@ -169,7 +170,7 @@ def feature_extraction(audio_data):
         feature_list.append(np.std(zcr))    
         
         # RMSE
-        rmse = librosa.feature.rms(y + 0.0001)[0]
+        rmse = librosa.feature.rmse(y + 0.0001)[0]
         feature_list.append(np.mean(rmse))
         feature_list.append(np.std(rmse))
 
@@ -221,6 +222,7 @@ def feature_extraction(audio_data):
         # Round off
         feature_list[1:] = np.round(feature_list[1:], decimals=3)
     feature_list_all.append(feature_list)
+    return feature_list_all
 
 def pca_extraction(X_data):
     X_data = StandardScaler().fit_transform(X_data)
@@ -256,17 +258,18 @@ def load_song():
                 print (data)
                 if (data.shape[1] == 2):
                     data = data[:,0]
+                data = data.astype(float)
                 audio_data.append([data, fs, filepath])
     # for r, d, f in os.walk(path):
     #     for file in f:
     #         if file.endswith('.mp3'):
     #             filepath = str(r)+ '/' + str(file)
     #             print(filepath)
-    #             try:
-    #                 y, sr = librosa.load(filepath, sr = 22050)
-    #                 audio_data.append([y, sr, filepath])
-    #             except:
-    #                 continue
+    #             # try:
+    #             y, sr = librosa.load(filepath, sr = 22050)
+    #             audio_data.append([y, sr, filepath])
+    #             # except:
+    #             #     continue
     return audio_data
 
 @app.route('/')
@@ -291,8 +294,11 @@ def rf():
     if (audio_songs != []):
         feature__list_all = feature_extraction(audio_songs)
         loaded_model = load_model("rf.pkl")
-        pred_probs = loaded_model.predict_proba(feature__list_all)
-        return pred_probs
+        feature__list_all = np.array(feature__list_all)
+        feature__list_all.reshape(-1,1)
+        print(feature__list_all)
+        pred_probs = loaded_model.predict_proba(feature__list_all[:,1:])
+        print (pred_probs)
     else:
         return "Could not open the song"
     #give output
@@ -303,6 +309,7 @@ def rf_pca():
     feature__list_all = feature_extraction(audio_songs)
     feature__list_all = pca_extraction(feature__list_all)
     loaded_model = load_model("rf_pca.pkl")
+    feature__list_all.reshape(-1,1)
     pred_probs = loaded_model.predict_proba(feature__list_all)
     #give output
 
