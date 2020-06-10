@@ -4,7 +4,9 @@ import numpy as np
 import pandas as pd
 from bisect import bisect_left, bisect_right
 import sklearn
+import os
 import math
+from werkzeug.utils import secure_filename
 from sklearn.cluster import KMeans
 
 app = Flask(__name__)
@@ -140,7 +142,7 @@ def spectral_flux(music_wave_data):
 
     return sf
 
-def feature_extraction(music_data)
+def feature_extraction(music_data):
     col_names = ['file_name', 'signal_mean', 'signal_std', 'signal_skew', 'signal_kurtosis', 
                 'zcr_mean', 'zcr_std', 'rmse_mean', 'rmse_std', 'tempo',
                 'spectral_centroid_mean', 'spectral_centroid_std',
@@ -236,7 +238,7 @@ def load_model(filename):
     loaded_model = pickle.load(open(filename, 'rb'))
 
 def store_song(song):
-    #save the file locally
+    song.save(os.path.join("./songs/", str(song.filename)))
     pass
 
 @app.route('/')
@@ -252,7 +254,7 @@ def genre_prediction():
     if request.method == 'POST':
       f = request.files['file']
       print(f)
-      store_genre(f)
+      store_song(f)
     return render_template("genre_prediction.html")
 
 @app.route('/result', methods=['POST','GET'])
