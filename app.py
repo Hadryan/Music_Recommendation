@@ -235,11 +235,12 @@ def feature_extraction(music_data):
     #print(df)
 
 def load_model(filename):
-    loaded_model = pickle.load(open(filename, 'rb'))
+    path = "./models"
+    path = os.path.join(path,filename)
+    loaded_model = pickle.load(open(path,"rb"))
 
 def store_song(song):
     song.save(os.path.join("./songs/", str(song.filename)))
-    pass
 
 @app.route('/')
 def home():
