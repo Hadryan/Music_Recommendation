@@ -6,6 +6,12 @@ from bisect import bisect_left, bisect_right
 import sklearn
 import os
 import math
+import librosa
+from sklearn.decomposition import PCA
+from sklearn.feature_selection import RFE
+import xgboost as xgb
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
 from werkzeug.utils import secure_filename
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
@@ -133,12 +139,6 @@ def predict_recommendation():
     # else:
     #     return render_template('forest_fire.html',pred='Your Forest is safe.\n Probability of fire occuring is {}'.format(output),bhai="Your Forest is Safe for now")
 
-def perform_pca(X_data):
-	X_data = StandardScaler().fit_transform(X_data)
-	pca = pk.load(open("models/pca.pkl",'rb'))
-	principalComponents = pca.transform(X_data)
-	return principalComponents
-
 def spectral_flux(music_wave_data):
     # obtain the stft of the music_wave_data
     spectrum = librosa.core.stft(music_wave_data)
@@ -150,22 +150,7 @@ def spectral_flux(music_wave_data):
     return sf
 
 def feature_extraction(music_data):
-    col_names = ['file_name', 'signal_mean', 'signal_std', 'signal_skew', 'signal_kurtosis', 
-                'zcr_mean', 'zcr_std', 'rmse_mean', 'rmse_std', 'tempo',
-                'spectral_centroid_mean', 'spectral_centroid_std',
-                'spectral_bandwidth_2_mean', 'spectral_bandwidth_2_std',
-                'spectral_bandwidth_3_mean', 'spectral_bandwidth_3_std',
-                'spectral_bandwidth_4_mean', 'spectral_bandwidth_4_std', 'spectral_flux'] + \
-                ['spectral_contrast_' + str(i+1) + '_mean' for i in range(7)] + \
-                ['spectral_contrast_' + str(i+1) + '_std' for i in range(7)] + \
-                ['spectral_rolloff_mean', 'spectral_rolloff_std'] + \
-                ['mfccs_' + str(i+1) + '_mean' for i in range(20)] + \
-                ['mfccs_' + str(i+1) + '_std' for i in range(20)] + \
-                ['chroma_stft_' + str(i+1) + '_mean' for i in range(12)] + \
-                ['chroma_stft_' + str(i+1) + '_std' for i in range(12)]
-     
-    df = pd.DataFrame(columns=col_names)
-    count = 0
+    feature_list_all = []
     for i in range(0, len(audio_data)):
         feature_list = [audio_data[i][2]]
         y = audio_data[i][0]
@@ -230,24 +215,40 @@ def feature_extraction(music_data):
         feature_list.extend(np.mean(chroma_stft, axis=1))
         feature_list.extend(np.std(chroma_stft, axis=1))
 
-
         # Round off
         feature_list[1:] = np.round(feature_list[1:], decimals=3)
+    feature_list_all.append(feature_list)
 
-        # Append feature list to the feature data
-        df = df.append(pd.DataFrame(feature_list, index=col_names).transpose(), ignore_index=True)
+def pca_extraction(X_data):
+    X_data = StandardScaler().fit_transform(X_data)
+    pca = pickle.load(open("models/pca.pkl",'rb'))
+    principalComponents = pca.transform(X_data)
+    return principalComponents
 
-        count +=1
-        print(count)
-    #print(df)
 
 def load_model(filename):
-    path = "./models"
+    path = "models"
     path = os.path.join(path,filename)
     loaded_model = pickle.load(open(path,"rb"))
+    return loaded_model
 
-def store_song(song):
+def save_song(song):
     song.save(os.path.join("./songs/", str(song.filename)))
+
+def load_song():
+    audio_data = []
+    path = "songs"
+    for r, d, f in os.walk(path):
+        for file in f:
+            if file.endswith('.mp3'):
+                filepath = str(r)+ '/' + str(file)
+                print(filepath)
+                try:
+                    y, sr = librosa.load(filepath, sr = 22050)
+                    audio_data.append([y, sr, filepath])
+                except:
+                    continue
+    return audio_data
 
 @app.route('/')
 def home():
@@ -262,23 +263,145 @@ def genre_prediction():
     if request.method == 'POST':
       f = request.files['file']
       print(f)
-      store_song(f)
+      save_song(f)
     return render_template("genre_prediction.html")
 
-@app.route('/result', methods=['POST','GET'])
-def output():
+@app.route('/rf', methods=['POST','GET'])
+def rf():
+    audio_songs = load_song()
+    if (audio_songs != []):
+        feature__list_all = feature_extraction(audio_songs)
+        loaded_model = load_model("rf.pkl")
+        pred_probs = loaded_model.predict_proba(feature__list_all)
+        return pred_probs
+    else:
+        return "Could not open the song"
+    #give output
+
+@app.route('/rf_pca', methods=['POST','GET'])
+def rf_pca():
+    audio_songs = load_song()
+    feature__list_all = feature_extraction(audio_songs)
+    feature__list_all = pca_extraction(feature__list_all)
+    loaded_model = load_model("rf_pca.pkl")
+    pred_probs = loaded_model.predict_proba(feature__list_all)
+    #give output
+
+@app.route('/rf_rfe', methods=['POST','GET'])
+def rf_rfe():
+    audio_songs = load_song()
+    feature__list_all = feature_extraction(audio_songs)
+    loaded_model = load_model("rf_pca.pkl")
+    pred_probs = loaded_model.predict_proba(feature__list_all)
+    #give output
+
+@app.route('/rf_pca_rfe', methods=['POST','GET'])
+def rf_pca_rfe():
     #somehow get which button is clicked
     #and call feature extraction accordingly
     #then the saved model to be loaded
     #and compute the genre
     pass
 
+@app.route('/xgb', methods=['POST','GET'])
+def xgb():
+    audio_songs = load_song()
+    feature__list_all = feature_extraction(audio_songs)
+    loaded_model = load_model("xgb.pkl")
+    pred_probs = loaded_model.predict_proba(feature__list_all)
+
+@app.route('/xgb_pca', methods=['POST','GET'])
+def xgb_pca():
+    audio_songs = load_song()
+    feature__list_all = feature_extraction(audio_songs)
+    feature__list_all = pca_extraction(feature__list_all)
+    loaded_model = load_model("xgb_pca.pkl")
+    pred_probs = loaded_model.predict_proba(feature__list_all)
+    #give output
+
+@app.route('/xgb_rfe', methods=['POST','GET'])
+def xgb_rfe():
+    #somehow get which button is clicked
+    #and call feature extraction accordingly
+    #then the saved model to be loaded
+    #and compute the genre
+    pass
+
+@app.route('/xgb_pca_rfe', methods=['POST','GET'])
+def xgb_pca_rfe():
+    #somehow get which button is clicked
+    #and call feature extraction accordingly
+    #then the saved model to be loaded
+    #and compute the genre
+    pass
+
+@app.route('/svm', methods=['POST','GET'])
+def svm():
+    audio_songs = load_song()
+    feature__list_all = feature_extraction(audio_songs)
+    loaded_model = load_model("svm.pkl")
+    pred_probs = loaded_model.predict_proba(feature__list_all)
+
+@app.route('/svm_pca', methods=['POST','GET'])
+def svm_pca():
+    audio_songs = load_song()
+    feature__list_all = feature_extraction(audio_songs)
+    feature__list_all = pca_extraction(feature__list_all)
+    loaded_model = load_model("svm_pca.pkl")
+    pred_probs = loaded_model.predict_proba(feature__list_all)
+    #give output
+
+@app.route('/nn', methods=['POST','GET'])
+def nn():
+    audio_songs = load_song()
+    feature__list_all = feature_extraction(audio_songs)
+    loaded_model = load_model("nn.pkl")
+    pred_probs = loaded_model.predict_proba(feature__list_all)
+
+@app.route('/nn_pca', methods=['POST','GET'])
+def nn_pca():
+    audio_songs = load_song()
+    feature__list_all = feature_extraction(audio_songs)
+    feature__list_all = pca_extraction(feature__list_all)
+    loaded_model = load_model("nn_pca.pkl")
+    pred_probs = loaded_model.predict_proba(feature__list_all)
+    #give output
+
+@app.route('/cnn', methods=['POST','GET'])
+def cnn():
+    audio_songs = load_song()
+    feature__list_all = feature_extraction(audio_songs)
+    loaded_model = load_model("cnn.pkl")
+    pred_probs = loaded_model.predict_proba(feature__list_all)
+
+@app.route('/cnn_pca', methods=['POST','GET'])
+def cnn_pca():
+    audio_songs = load_song()
+    feature__list_all = feature_extraction(audio_songs)
+    feature__list_all = pca_extraction(feature__list_all)
+    loaded_model = load_model("cnn_pca.pkl")
+    pred_probs = loaded_model.predict_proba(feature__list_all)
+    #give output
+
+@app.route('/en', methods=['POST','GET'])
+def en():
+    audio_songs = load_song()
+    feature__list_all = feature_extraction(audio_songs)
+    loaded_model = load_model("en.pkl")
+    pred_probs = loaded_model.predict_proba(feature__list_all)
+
+@app.route('/en_pca', methods=['POST','GET'])
+def en_pca():
+    audio_songs = load_song()
+    feature__list_all = feature_extraction(audio_songs)
+    feature__list_all = pca_extraction(feature__list_all)
+    loaded_model = load_model("en_pca.pkl")
+    pred_probs = loaded_model.predict_proba(feature__list_all)
+    #give output
 
 @app.route('/upload', methods=['POST','GET'])
 def upload():
    return render_template('upload.html')
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
