@@ -8,6 +8,7 @@ import os
 import math
 from werkzeug.utils import secure_filename
 from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 
 app = Flask(__name__)
 
@@ -131,6 +132,12 @@ def predict_recommendation():
     #     return render_template('forest_fire.html',pred='Your Forest is in Danger.\nProbability of fire occuring is {}'.format(output),bhai="kuch karna hain iska ab?")
     # else:
     #     return render_template('forest_fire.html',pred='Your Forest is safe.\n Probability of fire occuring is {}'.format(output),bhai="Your Forest is Safe for now")
+
+def perform_pca(X_data):
+	X_data = StandardScaler().fit_transform(X_data)
+	pca = pk.load(open("models/pca.pkl",'rb'))
+	principalComponents = pca.transform(X_data)
+	return principalComponents
 
 def spectral_flux(music_wave_data):
     # obtain the stft of the music_wave_data
