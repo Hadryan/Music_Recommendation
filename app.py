@@ -130,6 +130,111 @@ def predict_recommendation():
     # else:
     #     return render_template('forest_fire.html',pred='Your Forest is safe.\n Probability of fire occuring is {}'.format(output),bhai="Your Forest is Safe for now")
 
+def spectral_flux(music_wave_data):
+    # obtain the stft of the music_wave_data
+    spectrum = librosa.core.stft(music_wave_data)
+    N = spectrum.shape[0]
+
+    # calculating the spectral flux
+    sf = np.sqrt(np.sum((np.diff(np.abs(spectrum)))**2, axis=0)) / N
+
+    return sf
+
+def feature_extraction(music_data)
+    col_names = ['file_name', 'signal_mean', 'signal_std', 'signal_skew', 'signal_kurtosis', 
+                'zcr_mean', 'zcr_std', 'rmse_mean', 'rmse_std', 'tempo',
+                'spectral_centroid_mean', 'spectral_centroid_std',
+                'spectral_bandwidth_2_mean', 'spectral_bandwidth_2_std',
+                'spectral_bandwidth_3_mean', 'spectral_bandwidth_3_std',
+                'spectral_bandwidth_4_mean', 'spectral_bandwidth_4_std', 'spectral_flux'] + \
+                ['spectral_contrast_' + str(i+1) + '_mean' for i in range(7)] + \
+                ['spectral_contrast_' + str(i+1) + '_std' for i in range(7)] + \
+                ['spectral_rolloff_mean', 'spectral_rolloff_std'] + \
+                ['mfccs_' + str(i+1) + '_mean' for i in range(20)] + \
+                ['mfccs_' + str(i+1) + '_std' for i in range(20)] + \
+                ['chroma_stft_' + str(i+1) + '_mean' for i in range(12)] + \
+                ['chroma_stft_' + str(i+1) + '_std' for i in range(12)]
+     
+    df = pd.DataFrame(columns=col_names)
+    count = 0
+    for i in range(0, len(audio_data)):
+        feature_list = [audio_data[i][2]]
+        y = audio_data[i][0]
+        
+        feature_list.append(np.mean(abs(y)))
+        feature_list.append(np.std(y))
+        feature_list.append(scipy.stats.skew(abs(y)))
+        feature_list.append(scipy.stats.kurtosis(y))
+        
+        # ZCR
+        zcr = librosa.feature.zero_crossing_rate(y + 0.0001, frame_length=2048, hop_length=512)[0]
+        feature_list.append(np.mean(zcr))
+        feature_list.append(np.std(zcr))    
+        
+        # RMSE
+        rmse = librosa.feature.rmse(y + 0.0001)[0]
+        feature_list.append(np.mean(rmse))
+        feature_list.append(np.std(rmse))
+
+        # Tempo
+        tempo = librosa.beat.tempo(y, sr=sr)
+        feature_list.extend(tempo)
+        
+        # Spectral Centroids
+        spectral_centroids = librosa.feature.spectral_centroid(y+0.01, sr=sr)[0]
+        feature_list.append(np.mean(spectral_centroids))
+        feature_list.append(np.std(spectral_centroids))
+
+        # Spectral Bandwidth
+        spectral_bandwidth_2 = librosa.feature.spectral_bandwidth(y+0.01, sr=sr, p=2)[0]
+        spectral_bandwidth_3 = librosa.feature.spectral_bandwidth(y+0.01, sr=sr, p=3)[0]
+        spectral_bandwidth_4 = librosa.feature.spectral_bandwidth(y+0.01, sr=sr, p=4)[0]
+        feature_list.append(np.mean(spectral_bandwidth_2))
+        feature_list.append(np.std(spectral_bandwidth_2))
+        feature_list.append(np.mean(spectral_bandwidth_3))
+        feature_list.append(np.std(spectral_bandwidth_3))
+        feature_list.append(np.mean(spectral_bandwidth_3))
+        feature_list.append(np.std(spectral_bandwidth_3))
+            
+        # Spectral Flux
+        sf = spectral_flux(y)
+        sf_num = np.mean(sf)
+        feature_list.append(sf_num) 
+
+        # Spectral Contrast
+        spectral_contrast = librosa.feature.spectral_contrast(y, sr=sr, n_bands = 6, fmin = 200.0)
+        feature_list.extend(np.mean(spectral_contrast, axis=1))
+        feature_list.extend(np.std(spectral_contrast, axis=1))
+
+        # Spectral Rolloff
+        spectral_rolloff = librosa.feature.spectral_rolloff(y+0.01, sr=sr, roll_percent = 0.85)[0]
+        feature_list.append(np.mean(spectral_rolloff))
+        feature_list.append(np.std(spectral_rolloff))
+
+        # MFCC
+        mfccs = librosa.feature.mfcc(y, sr=sr, n_mfcc=20)
+        feature_list.extend(np.mean(mfccs, axis=1))
+        feature_list.extend(np.std(mfccs, axis=1))
+
+        # STFT
+        chroma_stft = librosa.feature.chroma_stft(y, sr=sr, hop_length=1024)
+        feature_list.extend(np.mean(chroma_stft, axis=1))
+        feature_list.extend(np.std(chroma_stft, axis=1))
+
+
+        # Round off
+        feature_list[1:] = np.round(feature_list[1:], decimals=3)
+
+        # Append feature list to the feature data
+        df = df.append(pd.DataFrame(feature_list, index=col_names).transpose(), ignore_index=True)
+
+        count +=1
+        print(count)
+    #print(df)
+
+def load_model(filename):
+    loaded_model = pickle.load(open(filename, 'rb'))
+
 def store_song(song):
     #save the file locally
     pass
